@@ -1,10 +1,10 @@
 from functools import lru_cache
-import pandas as pd
+from pandas import Period
 
 
 @lru_cache(10_000)
 def convert_to_pandas_period(date, freq):
-    return pd.Period(date, freq)
+    return Period(date, freq)
 
 
 def transform_start_field(batch, freq):

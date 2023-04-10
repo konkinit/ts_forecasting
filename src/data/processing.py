@@ -1,6 +1,12 @@
+import os
+import sys
 import datasets
 from functools import partial
-from .utils import transform_start_field
+if os.getcwd() not in sys.path:
+    sys.path.append(os.getcwd())
+from src.utils import (
+    transform_start_field
+)
 
 
 def get_train_test(dataset):
