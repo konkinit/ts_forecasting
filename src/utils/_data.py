@@ -22,7 +22,6 @@ def transform_start_field(
 
 def get_split_limit(
         raw_serie: List[float],
-        split: str,
         split_frac: ndarray):
     assert (
         len(split_frac) == 3 &
@@ -30,9 +29,9 @@ def get_split_limit(
         split_frac[0] > split_frac[1] &
         split_frac[1] > split_frac[2]
     )
-    split_frac = array([
+    _split_frac = array([
                     split_frac[0],
                     split_frac[0]+split_frac[1],
                     1
                 ])
-    return (len(raw_serie)*split_frac).astype(int)
+    return (len(raw_serie)*_split_frac).astype(int)
