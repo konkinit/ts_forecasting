@@ -25,32 +25,44 @@ class HF_Dataset:
     def __init__(
             self,
             start: List[datetime],
-            target: List[List[float]],
+            time_series: List[List[float]],
             split_frac: ndarray,
-            feat_static_cat: List[Any],
-            feat_dynamic_real: List[Any],
-            item_id: List[str]) -> None:
+            feat_static_cat: List[List[Any]],
+            feat_dynamic_real: List[List[Any]]) -> None:
+        assert len(start) == len(time_series)
         self.start = start
-        self.target = target
+        self.target = time_series
         self.split_frac = split_frac
         self.feat_static_cat = feat_static_cat
         self.feat_dynamic_real = feat_dynamic_real
-        self.item_id = item_id
 
     def getDataset(self, split_index: int) -> Dataset:
-        split_limit = get_split_limit(
-                        self.target,
+        n_ts = len(self.target)
+        split_limit = [
+                    get_split_limit(
+                        self.target[i],
                         self.split_frac
-                    )
+                    ) for i in range(n_ts)]
         return Dataset.from_dict(
                 {
                     'start': self.start,
-                    'target': self.target[:split_limit[split_index]],
-                    'feat_static_cat': self.feat_static_cat,
-                    'feat_dynamic_real': self.feat_dynamic_real,
-                    'item_id': self.item_id
+                    'target': [
+                        self.target[i][:split_limit[i][split_index]] for
+                        i in range(n_ts)
+                        ],
+                    'feat_static_cat': [
+                        self.feat_static_cat[i][:split_limit[i][split_index]]
+                        for i in range(n_ts)
+                        ],
+                    'feat_dynamic_real': [
+                        self.feat_dynamic_real[i][:split_limit[i][split_index]]
+                        for i in range(n_ts)
+                        ],
+                    'item_id': [f"T{i}" for i in range(n_ts)]
                 }
             )
 
     def getDatasetDict(self) -> DatasetDict:
-        return DatasetDict({_split[0]: self.getDataset(0)})
+        return DatasetDict(
+            {_split[i]: self.getDataset(i) for i in range(len(_split))}
+            )

@@ -24,10 +24,10 @@ def get_split_limit(
         raw_serie: List[float],
         split_frac: ndarray):
     assert (
-        len(split_frac) == 3 &
-        split_frac.sum() == 1.0 &
-        split_frac[0] > split_frac[1] &
-        split_frac[1] > split_frac[2]
+        (split_frac.shape[0] == 3) &
+        (split_frac.sum().round(10) == 1.0) &
+        (split_frac[0] > split_frac[1]) &
+        (split_frac[1] > split_frac[2])
     )
     _split_frac = array([
                     split_frac[0],
