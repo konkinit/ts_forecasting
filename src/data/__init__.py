@@ -1,12 +1,10 @@
-from .processing import (
-    DataProcessing
-)
 from .dataset import (
-    HF_Dataset
+    HF_Dataset,
+    XGB_Dataset
 )
 
 
 __all__ = [
-    "DataProcessing",
-    "HF_Dataset"
+    "HF_Dataset",
+    "XGB_Dataset"
 ]

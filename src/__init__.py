@@ -1,4 +1,4 @@
-from .data import processing
+from .data import dataset
 from .utils import (
     _data,
     _models
@@ -6,7 +6,7 @@ from .utils import (
 
 
 __all__ = [
-    "processing",
+    "dataset",
     "_models",
     "_data"
 ]

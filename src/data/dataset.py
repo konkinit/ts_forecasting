@@ -10,7 +10,8 @@ from typing import List, Any
 if os.getcwd() not in sys.path:
     sys.path.append(os.getcwd())
 from src.utils import (
-    get_split_limit
+    get_split_limit,
+    DataProcessing
 )
 
 
@@ -26,15 +27,18 @@ class HF_Dataset:
             self,
             start: List[datetime],
             time_series: List[List[float]],
-            split_frac: ndarray,
             feat_static_cat: List[List[Any]],
-            feat_dynamic_real: List[List[Any]]) -> None:
-        assert len(start) == len(time_series)
+            feat_dynamic_real: List[List[Any]],
+            split_frac: ndarray,
+            freq: str) -> None:
+        assert (len(start) ==
+                len(time_series))
         self.start = start
         self.target = time_series
         self.split_frac = split_frac
         self.feat_static_cat = feat_static_cat
         self.feat_dynamic_real = feat_dynamic_real
+        self.freq = freq
 
     def getDataset(self, split_index: int) -> Dataset:
         n_ts = len(self.target)
@@ -66,3 +70,13 @@ class HF_Dataset:
         return DatasetDict(
             {_split[i]: self.getDataset(i) for i in range(len(_split))}
             )
+
+    def multi_variate_datasets(self):
+        return DataProcessing(
+                    self.getDatasetDict()
+                ).multi_variate_format(self.freq)
+
+
+class XGB_Dataset:
+    def __init__(self):
+        pass
