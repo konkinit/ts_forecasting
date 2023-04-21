@@ -35,9 +35,7 @@ class DataProcessing:
                             max_target_dim=num_of_variates
                         )
         test_grouper = MultivariateGrouper(
-                            max_target_dim=num_of_variates,
-                            num_test_dates=(len(self.test_dataset) //
-                                            num_of_variates),
+                            max_target_dim=num_of_variates
                         )
         return (
             train_grouper(self.train_dataset),
