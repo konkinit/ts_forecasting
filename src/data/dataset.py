@@ -1,5 +1,6 @@
 import os
 import sys
+from dataclasses import dataclass
 from datetime import datetime
 from datasets import (
     Dataset,
@@ -24,26 +25,34 @@ _split = [
 ]
 
 
+@dataclass
+class HF_Dataset_Params:
+    """a dataclass to store the params of the
+    following class
+    """
+    start: List[datetime]
+    time_series: List[List[float]]
+    feat_static_cat: List[List[Any]]
+    feat_dynamic_real: List[List[Any]]
+    split_frac: ndarray
+    freq: str
+
+
 class HF_Dataset:
     """Transform a time serie in list type to a
     Hugging Face dataset format
     """
     def __init__(
             self,
-            start: List[datetime],
-            time_series: List[List[float]],
-            feat_static_cat: List[List[Any]],
-            feat_dynamic_real: List[List[Any]],
-            split_frac: ndarray,
-            freq: str) -> None:
-        assert (len(start) ==
-                len(time_series))
-        self.start = start
-        self.target = time_series
-        self.split_frac = split_frac
-        self.feat_static_cat = feat_static_cat
-        self.feat_dynamic_real = feat_dynamic_real
-        self.freq = freq
+            hf_dataset_params: HF_Dataset_Params) -> None:
+        assert (len(hf_dataset_params.start) ==
+                len(hf_dataset_params.time_series))
+        self.start = hf_dataset_params.start
+        self.target = hf_dataset_params.time_series
+        self.split_frac = hf_dataset_params.split_frac
+        self.feat_static_cat = hf_dataset_params.feat_static_cat
+        self.feat_dynamic_real = hf_dataset_params.feat_dynamic_real
+        self.freq = hf_dataset_params.freq
 
     def getDataset(self, split_index: int) -> Dataset:
         """Create a dataset for a given partition
@@ -66,8 +75,8 @@ class HF_Dataset:
                 {
                     'start': self.start,
                     'target': [
-                        self.target[i][:split_limit[i][split_index]] for
-                        i in range(n_ts)
+                        self.target[i][:split_limit[i][split_index]]
+                        for i in range(n_ts)
                         ],
                     'feat_static_cat': [
                         self.feat_static_cat[i][:split_limit[i][split_index]]
@@ -101,6 +110,16 @@ class HF_Dataset:
         return DataProcessing(
                     self.getDatasetDict()
                 ).multi_variate_format(self.freq)
+
+    def get_num_of_variates(self) -> int:
+        """ Get the number of time series in the dataset
+
+        Returns:
+            int: number of time series
+        """
+        return DataProcessing(
+                    self.getDatasetDict()
+                ).get_num_of_variates()
 
 
 class XGB_Dataset:

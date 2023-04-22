@@ -101,6 +101,14 @@ class DataProcessing:
         self.test_dataset.set_transform(
             partial(transform_start_field, freq=freq))
 
+    def get_num_of_variates(self) -> int:
+        """ Get the number of time series in the dataset
+
+        Returns:
+            int: number of time series
+        """
+        return len(self.train_dataset)
+
     def multi_variate_format(
             self,
             freq: str) -> Tuple[Dataset]:
@@ -117,7 +125,6 @@ class DataProcessing:
         """
         self.dates_transforming(freq)
         num_of_variates = len(self.train_dataset)
-        print(len(self.test_dataset)//num_of_variates)
         train_grouper = MultivariateGrouper(
                             max_target_dim=num_of_variates
                         )
