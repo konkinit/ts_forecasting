@@ -6,7 +6,9 @@ from datasets import (
     DatasetDict
 )
 from numpy import ndarray
-from typing import List, Any
+from typing import (
+    List, Any, Tuple
+)
 if os.getcwd() not in sys.path:
     sys.path.append(os.getcwd())
 from src.utils import (
@@ -23,6 +25,9 @@ _split = [
 
 
 class HF_Dataset:
+    """Transform a time serie in list type to a
+    Hugging Face dataset format
+    """
     def __init__(
             self,
             start: List[datetime],
@@ -41,6 +46,16 @@ class HF_Dataset:
         self.freq = freq
 
     def getDataset(self, split_index: int) -> Dataset:
+        """Create a dataset for a given partition
+
+        Args:
+            split_index (int): index of the partition according
+            to the list ["train", "validation", "test"]
+
+        Returns:
+            Dataset: HF dataset with 5 fields
+        """
+        assert split_index <= 2
         n_ts = len(self.target)
         split_limit = [
                     get_split_limit(
@@ -67,11 +82,22 @@ class HF_Dataset:
             )
 
     def getDatasetDict(self) -> DatasetDict:
+        """Groups the datasets for the 3 partitions
+
+        Returns:
+            DatasetDict: dict of train/valid/test datasets
+        """
         return DatasetDict(
             {_split[i]: self.getDataset(i) for i in range(len(_split))}
             )
 
-    def multi_variate_datasets(self):
+    def multi_variate_datasets(self) -> Tuple[Dataset]:
+        """Converts dataset to a multivariate time
+        serie
+
+        Returns:
+            Tuple[Dataset]: tuple of multivariate time series
+        """
         return DataProcessing(
                     self.getDatasetDict()
                 ).multi_variate_format(self.freq)
