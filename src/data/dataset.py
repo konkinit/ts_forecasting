@@ -1,17 +1,15 @@
 import os
 import sys
-from dataclasses import dataclass
-from datetime import datetime
 from datasets import (
     Dataset,
     DatasetDict
 )
-from numpy import ndarray
 from typing import (
-    List, Any, Tuple
+    Tuple
 )
 if os.getcwd() not in sys.path:
     sys.path.append(os.getcwd())
+from src.conf import HF_Dataset_Params
 from src.utils import (
     get_split_limit,
     DataProcessing
@@ -23,19 +21,6 @@ _split = [
     "validation",
     "test"
 ]
-
-
-@dataclass
-class HF_Dataset_Params:
-    """a dataclass to store the params of the
-    following class
-    """
-    start: List[datetime]
-    time_series: List[List[float]]
-    feat_static_cat: List[List[Any]]
-    feat_dynamic_real: List[List[Any]]
-    split_frac: ndarray
-    freq: str
 
 
 class HF_Dataset:
@@ -67,10 +52,11 @@ class HF_Dataset:
         assert split_index <= 2
         n_ts = len(self.target)
         split_limit = [
-                    get_split_limit(
-                        self.target[i],
-                        self.split_frac
-                    ) for i in range(n_ts)]
+            get_split_limit(
+                self.target[i],
+                self.split_frac
+            ) for i in range(n_ts)
+        ]
         return Dataset.from_dict(
                 {
                     'start': self.start,
@@ -108,8 +94,8 @@ class HF_Dataset:
             Tuple[Dataset]: tuple of multivariate time series
         """
         return DataProcessing(
-                    self.getDatasetDict()
-                ).multi_variate_format(self.freq)
+            self.getDatasetDict()
+        ).multi_variate_format(self.freq)
 
     def get_num_of_variates(self) -> int:
         """ Get the number of time series in the dataset
@@ -118,8 +104,8 @@ class HF_Dataset:
             int: number of time series
         """
         return DataProcessing(
-                    self.getDatasetDict()
-                ).get_num_of_variates()
+            self.getDatasetDict()
+        ).get_num_of_variates()
 
 
 class XGB_Dataset:

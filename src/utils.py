@@ -83,14 +83,16 @@ class DataProcessing:
     """
     def __init__(
             self,
-            dataset: DatasetDict):
+            dataset: DatasetDict
+    ) -> None:
         self.dataset = dataset.copy()
         self.train_dataset = self.dataset["train"]
         self.test_dataset = self.dataset["test"]
 
     def dates_transforming(
-                self,
-                freq: str) -> None:
+            self,
+            freq: str
+    ) -> None:
         """Update start to pd.Period in each partition dataset
 
         Args:
@@ -111,7 +113,8 @@ class DataProcessing:
 
     def multi_variate_format(
             self,
-            freq: str) -> Tuple[Dataset]:
+            freq: str
+    ) -> Tuple[Dataset]:
         """Since a dataset can be defined with many time series,
         this method converts dataset to a multivariate time
         serie
