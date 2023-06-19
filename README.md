@@ -4,19 +4,19 @@
 </h1>
 
 <p align="center">
-    This project implements some nnets-based time series forecasting models, compares them 
-    and aims to deploy the champion
+    This project implements some time series forecasting models, compares them 
+    with the purpose to deploy the champion !
 </p>
 
-# Getting Started
+## Getting Started
 
 
 
-# Description
+## Description
 
 
 
-# Useful Links
+## Useful Links
 
 1. [Informer: Beyond Efficient Transformer for Long Sequence Time-Series Forecasting](https://huggingface.co/docs/transformers/main/en/model_doc/informer)
 

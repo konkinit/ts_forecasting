@@ -29,7 +29,8 @@ class HF_Dataset:
     """
     def __init__(
             self,
-            hf_dataset_params: HF_Dataset_Params) -> None:
+            hf_dataset_params: HF_Dataset_Params
+    ) -> None:
         assert (len(hf_dataset_params.start) ==
                 len(hf_dataset_params.time_series))
         self.start = hf_dataset_params.start
@@ -39,12 +40,16 @@ class HF_Dataset:
         self.feat_dynamic_real = hf_dataset_params.feat_dynamic_real
         self.freq = hf_dataset_params.freq
 
-    def getDataset(self, split_index: int) -> Dataset:
+    def getDataset(
+            self,
+            split_index: int
+    ) -> Dataset:
         """Create a dataset for a given partition
 
         Args:
-            split_index (int): index of the partition according
-            to the list ["train", "validation", "test"]
+            split_index (int): index of the partition
+            according to the list
+            ["train", "validation", "test"]
 
         Returns:
             Dataset: HF dataset with 5 fields
@@ -58,35 +63,55 @@ class HF_Dataset:
             ) for i in range(n_ts)
         ]
         return Dataset.from_dict(
-                {
-                    'start': self.start,
-                    'target': [
-                        self.target[i][:split_limit[i][split_index]]
-                        for i in range(n_ts)
-                        ],
-                    'feat_static_cat': [
-                        self.feat_static_cat[i][:split_limit[i][split_index]]
-                        for i in range(n_ts)
-                        ],
-                    'feat_dynamic_real': [
-                        self.feat_dynamic_real[i][:split_limit[i][split_index]]
-                        for i in range(n_ts)
-                        ],
-                    'item_id': [f"T{i}" for i in range(n_ts)]
-                }
-            )
+            {
+                'start': self.start,
+                'target': [
+                    self.target[i][:split_limit[i][split_index]]
+                    for i in range(n_ts)
+                ],
+                'feat_static_cat': [
+                    self.feat_static_cat[i] for i in range(n_ts)
+                ],
+                'feat_dynamic_real': [
+                    self.feat_dynamic_real[i] for i in range(n_ts)
+                ],
+                'item_id': [f"T{i}" for i in range(n_ts)]
+            }
+        )
 
     def getDatasetDict(self) -> DatasetDict:
         """Groups the datasets for the 3 partitions
 
         Returns:
-            DatasetDict: dict of train/valid/test datasets
+            DatasetDict: dict of train/validation/test datasets
         """
         return DatasetDict(
-            {_split[i]: self.getDataset(i) for i in range(len(_split))}
-            )
+            {
+                split: self.getDataset(idx) for idx, split in enumerate(_split)
+            }
+        )
 
-    def multi_variate_datasets(self) -> Tuple[Dataset]:
+    def getFormattedDatasetDict(self) -> DatasetDict:
+        """Get the datasets dict with formatted date
+
+        Returns:
+            DatasetDict: formatted datasets dict
+        """
+        return DataProcessing(
+            self.getDatasetDict()
+        ).formated_dataset(self.freq)
+
+    def getNumVariates(self) -> int:
+        """Get the number of time series in the dataset
+
+        Returns:
+            int: number of time series
+        """
+        return DataProcessing(
+            self.getDatasetDict()
+        ).get_num_of_variates()
+
+    def getMVDatasets(self) -> Tuple[Dataset]:
         """Converts dataset to a multivariate time
         serie
 
@@ -96,16 +121,6 @@ class HF_Dataset:
         return DataProcessing(
             self.getDatasetDict()
         ).multi_variate_format(self.freq)
-
-    def get_num_of_variates(self) -> int:
-        """ Get the number of time series in the dataset
-
-        Returns:
-            int: number of time series
-        """
-        return DataProcessing(
-            self.getDatasetDict()
-        ).get_num_of_variates()
 
 
 class XGB_Dataset:

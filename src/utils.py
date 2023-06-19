@@ -87,6 +87,7 @@ class DataProcessing:
     ) -> None:
         self.dataset = dataset.copy()
         self.train_dataset = self.dataset["train"]
+        self.validation_dataset = self.dataset["validation"]
         self.test_dataset = self.dataset["test"]
 
     def dates_transforming(
@@ -100,6 +101,8 @@ class DataProcessing:
         """
         self.train_dataset.set_transform(
             partial(transform_start_field, freq=freq))
+        self.validation_dataset.set_transform(
+            partial(transform_start_field, freq=freq))
         self.test_dataset.set_transform(
             partial(transform_start_field, freq=freq))
 
@@ -110,6 +113,16 @@ class DataProcessing:
             int: number of time series
         """
         return len(self.train_dataset)
+
+    def formated_dataset(self, freq: str) -> DatasetDict:
+        self.dates_transforming(freq)
+        return DatasetDict(
+            {
+                "train": self.train_dataset,
+                "validation": self.validation_dataset,
+                "test": self.test_dataset
+            }
+        )
 
     def multi_variate_format(
             self,

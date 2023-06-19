@@ -4,10 +4,10 @@ from typing import List, Any
 
 @dataclass
 class TS_Transformer_Params:
-    list_transformers: List[Any]
+    prediction_length: int
     num_of_variates: int
     freq: str
-    prediction_length: int
+    list_transformers: List[Any]
     dropout: float
     encoder_layers: int
     decoder_layers: int

@@ -1,5 +1,4 @@
 pandas
-numpy
 pytest
 scikit-learn
 protobuf==3.19.6
