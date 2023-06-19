@@ -8,4 +8,5 @@ Jinja2
 transformers
 accelerate
 evaluate
+ujson
 gluonts

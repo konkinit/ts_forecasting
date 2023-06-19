@@ -12,7 +12,7 @@ if os.getcwd() not in sys.path:
 from src.conf import TS_Transformer_Params
 from src.utils import (
     create_train_dataloader,
-    create_test_dataloader
+    create_test_dataloader,
 )
 
 
@@ -38,7 +38,7 @@ class TS_Transformer:
         self.decoder_layers = params.decoder_layers
         self.d_model = params.d_model
 
-    def _config(self):
+    def _config(self) -> None:
         self.config = self._transformers[0](
             prediction_length=self.prediction_length,
             context_length=2*self.prediction_length,
@@ -59,12 +59,14 @@ class TS_Transformer:
             d_model=self.d_model,
         )
 
-    def _model(self):
+    def _model(self) -> None:
         self._config()
         self.model = self._transformers[1](self.config)
 
     def _transformation(
-            self, train_dataset: Dataset, test_dataset: Dataset
+            self,
+            train_dataset: Dataset,
+            test_dataset: Dataset
     ) -> Tuple:
         train_dataloader = create_train_dataloader(
             config=self.config,

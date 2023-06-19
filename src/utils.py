@@ -186,6 +186,15 @@ def create_transformation(
         freq: str,
         config: PretrainedConfig
 ) -> Transformation:
+    """Create a transformation pipeline
+
+    Args:
+        freq (str): the frequency of the time series
+        config (PretrainedConfig): the transformer config instance
+
+    Returns:
+        Transformation: the transformation stack
+    """
     remove_field_names = []
     if config.num_static_real_features == 0:
         remove_field_names.append(FieldName.FEAT_STATIC_REAL)
@@ -285,6 +294,21 @@ def create_instance_splitter(
     train_sampler: Optional[InstanceSampler] = None,
     validation_sampler: Optional[InstanceSampler] = None,
 ) -> Transformation:
+    """Sample windows from the dataset since the
+    entire history of values  cannot be passed to the Transformer due
+    to time- and memory constraints.
+
+    Args:
+        config (PretrainedConfig): the transformer config instance
+        mode (str): splitting mode
+        train_sampler (Optional[InstanceSampler], optional):
+        _description_. Defaults to None.
+        validation_sampler (Optional[InstanceSampler], optional):
+        _description_. Defaults to None.
+
+    Returns:
+        Transformation: a transformation built with InstzanceSplitter
+    """
     assert mode in ["train", "validation", "test"]
 
     instance_sampler = {
@@ -303,7 +327,7 @@ def create_instance_splitter(
         start_field=FieldName.START,
         forecast_start_field=FieldName.FORECAST_START,
         instance_sampler=instance_sampler,
-        past_length=config.context_length + max(config.lags_sequence),
+        past_length=config.context_length+max(config.lags_sequence),
         future_length=config.prediction_length,
         time_series_fields=["time_features", "observed_mask"],
     )
@@ -311,7 +335,7 @@ def create_instance_splitter(
 
 def create_train_dataloader(
     config: PretrainedConfig,
-    freq,
+    freq: str,
     data,
     batch_size: int,
     num_batches_per_epoch: int,
@@ -341,7 +365,7 @@ def create_train_dataloader(
     if cache_data:
         transformed_data = Cached(transformed_data)
 
-    # we initialize a Training instance
+    # initialize a Training instance
     instance_splitter = create_instance_splitter(config, "train")
 
     # the instance splitter will sample a window of
