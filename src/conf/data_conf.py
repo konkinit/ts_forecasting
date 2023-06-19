@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime
-from numpy import ndarray
 from typing import List, Any
 
 
@@ -13,5 +12,5 @@ class HF_Dataset_Params:
     time_series: List[List[float]]
     feat_static_cat: List[List[Any]]
     feat_dynamic_real: List[List[Any]]
-    split_frac: ndarray
     freq: str
+    prediction_length: int
